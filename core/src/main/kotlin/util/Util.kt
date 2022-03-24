@@ -7,8 +7,8 @@ import kotlin.reflect.*
 inline fun <reified T> listened(initial: T, crossinline onChange: (T) -> Unit): PropertyListener<T> {
 	return object : PropertyListener<T>(initial) {
 		override open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+			if (this.value != value) onChange(value)
 			this.value = value
-			onChange(value)
 		}
 	}
 }

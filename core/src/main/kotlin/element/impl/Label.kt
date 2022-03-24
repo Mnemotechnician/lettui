@@ -9,42 +9,39 @@ import com.github.mnemotechnician.lettui.util.*
  * Displays arbitrary text.
  *
  * @param text The text to display
- * @param wrap Whether to enable text wrap. When true, if the length of the text exceeds [maxWidth], it'gets wraped
- * @param maxWidth Maximum width of the label
+ * @param wrap Whether to enable text wrap. If true and the length of the text exceeds the label's preferred width, it'gets wraped.
  */
 open class Label(
 	text: String = "",
-	wrap: Boolean = false,
-	maxWidth: Int = Int.MAX_VALUE
+	wrap: Boolean = false
 ) : Element() {
 	var text by listened(text) { invalidate() }
 	var wrap by listened(wrap) { invalidate() }
-	var maxWidth by listened(maxWidth) { invalidate() }
+
+	val maxWidth get() = if (rawPrefWidth > 0) rawPrefWidth else Int.MAX_VALUE
 
 	override open fun layout() {
 		super.layout()
 
-		width = border.minWidth
-		height = 1 + border.minHeight
+		minWidth = border.minWidth
+		minHeight = border.minHeight + 1
 
-		var currentW = 0
+		var currentW = minWidth
 		text.forEach {
 			if (it == '\n') {
-				currentW = 0
-				height++
+				currentW = border.minWidth
+				minHeight++
 				return@forEach
 			} else if (wrap && currentW >= maxWidth) {
-				currentW = 0
-				height++
+				currentW = border.minWidth
+				minHeight++
 			}
-			
-			if (currentW < maxWidth) width = max(width, ++currentW)
-		}
 
+			if (currentW < maxWidth && (it != ' ' || currentW != 0)) minWidth = max(minWidth, ++currentW)
+		}
 	}
 
 	override open fun draw(canvas: TextCanvas) {
-		//todo: duplicate code?
 		super.draw(canvas)
 		
 		border.drawBordered(canvas, x, y, width, height) { baseX, baseY, width, height ->
@@ -53,15 +50,15 @@ open class Label(
 
 			text.forEach {
 				if (it == '\n') {
-					x = this.x
+					x = baseX
 					y++
 					return@forEach
-				} else if (wrap && x >= width) {
-					x = this.x
+				} else if (wrap && x >= baseX + width) {
+					x = baseX
 					y++
 				}
-
-				if (x < maxWidth) canvas.render(it, x++, y)
+				
+				if (x < baseX + width && y < baseY + height && (it != ' ' || x != baseX)) canvas.render(it, x++, y)
 			}
 		}
 	}

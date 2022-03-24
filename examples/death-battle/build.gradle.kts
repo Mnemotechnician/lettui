@@ -21,7 +21,7 @@ tasks.jar {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	
 	manifest {
-		attributes["Main-Class"] = "com.github.mnemotechnician.lettui.examples.simple.MainKt"
+		attributes["Main-Class"] = "com.github.mnemotechnician.lettui.examples.deathbattle.MainKt"
 	}
 	
 	from(*configurations.runtimeClasspath.files.map { if (it.isDirectory()) it else zipTree(it) }.toTypedArray())

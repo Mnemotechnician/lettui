@@ -9,4 +9,4 @@
  */
 
 rootProject.name = "lettui"
-include("core", "examples:simple-example")
+include("core", "examples:death-battle")

@@ -12,7 +12,8 @@ open class TextCanvas(width: Int, height: Int) {
 		private set
 
 	/** The canvas. (y, x). */
-	val output = Array(height) { Array(width) { CharPosition() } }
+	var output = Array(height) { Array(width) { CharPosition() } }
+		private set
 	
 	var cx: Int = 999
 	var cy: Int = 999
@@ -20,9 +21,10 @@ open class TextCanvas(width: Int, height: Int) {
 	/** Flushes the contents of this canvas to stdout and resets the state of the canvas */
 	open fun flush() {	
 		val string = buildString {
-			append("\u001b[2J\u001b[1;1H") //clear the screen and put cursor at (0, 0)
+			append("\u001b[1;1H") //put cursor at (0, 0)
 
 			output.forEach {
+				append("\u001b[2K") //clear this line
 				it.forEach {
 					append(it.char)
 					it.char = EMPTY_CHAR
@@ -32,7 +34,7 @@ open class TextCanvas(width: Int, height: Int) {
 
 			append("\u001b[$cy;${cx}H") //put the cursor at the current cursor position
 		}
-		System.out.write(string.toByteArray()) //write manually to avoid buffering
+		System.out.writeBytes(string.toByteArray()) //write manually to avoid buffering
 		setCursor(width - 5, height)
 	}
 
@@ -62,7 +64,10 @@ open class TextCanvas(width: Int, height: Int) {
 
 
 	fun resize(newWidth: Int, newHeight: Int) {
-		TODO("canvas resizing is not implemented")
+		if (newWidth == width && newHeight == height) return
+		output = Array(newHeight) { Array(newWidth) { CharPosition() } }
+		width = newWidth
+		height = newHeight
 	}
 }
 
