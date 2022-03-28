@@ -2,6 +2,7 @@ package com.github.mnemotechnician.lettui.element
 
 import kotlin.math.*
 import com.github.mnemotechnician.lettui.canvas.*
+import com.github.mnemotechnician.lettui.canvas.graphics.* 
 import com.github.mnemotechnician.lettui.element.listener.*
 import com.github.mnemotechnician.lettui.element.border.*
 import com.github.mnemotechnician.lettui.util.*
@@ -49,6 +50,19 @@ abstract class Element {
 
 	/** Optional border. Some elements may not account for it. */
 	var border by listened(Border.None) { invalidate() }
+
+	/** The foreground color of the element. Some elements may not account for it. */
+	val color = Color.WHITE
+	/** The background color of the element. Some elements may not account for it. */
+	val background = Color.BLACK
+	/** Element's transparency. Delegates to it's fore- and background colors. */
+	var alpha: Float
+		get() = max(color.alpha, background.alpha) / 255f
+		set(value: Float) { 
+			val alpha = (value * 255).toInt().coerceIn(Color.colorRange)
+			color.alpha = alpha
+			background.alpha = alpha
+		}
 	
 	/** The chain-like update listener */
 	protected var updateListener: UpdateListener? = null
@@ -67,6 +81,12 @@ abstract class Element {
 	/** Draws the element. */
 	open fun draw(canvas: TextCanvas) {
 		if (needsLayout) layout()
+		drawBackground(canvas)
+	}
+
+	/** Draws the background of the element */
+	protected open fun drawBackground(canvas: TextCanvas) {
+		canvas.render(char = ' ', x1 = x, y1 = y, x2 = x + width, y2 = y + height, background = background)
 	}
 
 	/** Recalculates the [minWidth] and [minHeight] of the element, also repositions the children in case of groups. */

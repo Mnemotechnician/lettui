@@ -14,6 +14,7 @@ import com.github.mnemotechnician.lettui.element.impl.*
 import com.github.mnemotechnician.lettui.element.layout.*
 import com.github.mnemotechnician.lettui.element.border.*
 import com.github.mnemotechnician.lettui.canvas.*
+import com.github.mnemotechnician.lettui.canvas.graphics.* 
 
 val UNIT_AMOUNT = 20
 
@@ -36,7 +37,7 @@ fun main() {
 	val ui = Lettui(targetFps = 10, sizeProvider = FixedSizeProvider(150, 35))
 
 	ui.root.apply {
-		//(this as? LinearLayout)?.fill = false
+		background.set(Color.GREEN)
 
 		+ Label("The Epic Death Battle").apply {
 			border = Border.Rounded

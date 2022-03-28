@@ -1,77 +1,51 @@
 package com.github.mnemotechnician.lettui.canvas
 
-import kotlin.math.*
+import com.github.mnemotechnician.lettui.canvas.graphics.*
 
-val CSI = "\u001b["
-val EMPTY_CHAR = ' ' //note for myself: YES, IT SHOULD BE A SPACE
+abstract class TextCanvas {
+	abstract val width: Int
+	abstract val height: Int
 
-open class TextCanvas(width: Int, height: Int) {
-	var width: Int = width
-		private set
-	var height: Int = height
-		private set
+	/** Renders a char at the specified position with the specified attributes */
+	abstract fun render(
+		char: Char, x: Int, y: Int,
+		bold: Boolean = false, italic: Boolean = false, underline: Boolean = false, strikethrough: Boolean = false,
+		foreground: Color = Color.WHITE, background: Color = Color.BLACK
+	)
 
-	/** The canvas. (y, x). */
-	var output = Array(height) { Array(width) { CharPosition() } }
-		private set
+	/** Renders a char at the specified position with the default attributes */
+	open fun render(char: Char, x: Int, y: Int) = render(char, x, y, false)
 	
-	var cx: Int = 999
-	var cy: Int = 999
-	
-	/** Flushes the contents of this canvas to stdout and resets the state of the canvas */
-	open fun flush() {	
-		val string = buildString {
-			append("\u001b[1;1H") //put cursor at (0, 0)
+	/** Renders a string, starting at the specified position with the default attributes */
+	open fun render(string: String, x: Int, y: Int) = render(string, x, y, false)
 
-			output.forEach {
-				append("\u001b[2K") //clear this line
-				it.forEach {
-					append(it.char)
-					it.char = EMPTY_CHAR
-				}
-				append("\u001b[1E") //move cursor to the beginning of the next line
+	/** Renders a string, starting at the specified position, with the specified attributes */
+	open fun render(
+		string: String, x: Int, y: Int,
+		bold: Boolean = false, italic: Boolean = false, underline: Boolean = false, strikethrough: Boolean = false,
+		foreground: Color = Color.WHITE, background: Color = Color.BLACK
+	) {
+		string.forEachIndexed { index, char ->
+			render(char, x + index, y, bold, italic, underline, strikethrough, foreground, background)
+		}
+	}
+
+	/** Fills a rectangle (from (x1, y1) to (x2, y2)) with the same character */
+	open fun render(
+		char: Char, x1: Int, y1: Int, x2: Int, y2: Int,
+		bold: Boolean = true, italic: Boolean = false, underline: Boolean = false, strikethrough: Boolean = false,
+		foreground: Color = Color.WHITE, background: Color = Color.BLACK
+	) {
+		for (x in x1..x2) {
+			for (y in y1..y2) {
+				render(char, x, y, bold, italic, underline, strikethrough, foreground, background)
 			}
-
-			append("\u001b[$cy;${cx}H") //put the cursor at the current cursor position
-		}
-		System.out.writeBytes(string.toByteArray()) //write manually to avoid buffering
-		setCursor(width - 5, height)
-	}
-
-	/** Renders a char at the current cursor position */
-	open fun render(char: Char) = render(char, cx, cy)
-
-	/** Renders a string at the current cursor position */
-	open fun render(string: String) = render(string, cx, cy)
-	
-	/** Renders a character at the specific position if it's in canvas bounds. Does not move the pointer. */
-	open fun render(char: Char, x: Int, y: Int) {
-		output.getOrNull(y)?.getOrNull(x)?.let { it.char = char }
-	}
-	
-	/** Renders a string, starting at the specified position. */
-	open fun render(string: String, x: Int, y: Int) {
-		for (i in 0 until string.length) {
-			render(string[i], x + i, y)
 		}
 	}
-	
-	/** Sets the cursor position. */
-	fun setCursor(x: Int, y: Int) {
-		cx = x
-		cy = y
-	}
 
+	/** Flushes the canvas, if applicable */
+	abstract fun flush()
 
-	fun resize(newWidth: Int, newHeight: Int) {
-		if (newWidth == width && newHeight == height) return
-		output = Array(newHeight) { Array(newWidth) { CharPosition() } }
-		width = newWidth
-		height = newHeight
-	}
-}
-
-class CharPosition {
-	/** character at this position. May be 0 if not present. */
-	var char: Char = EMPTY_CHAR
+	/** Resizes the canvas, if applicable */
+	abstract fun resize(newWidth: Int, newHeight: Int)
 }

@@ -2,6 +2,7 @@ package com.github.mnemotechnician.lettui.element.impl
 
 import kotlin.math.*
 import com.github.mnemotechnician.lettui.canvas.*
+import com.github.mnemotechnician.lettui.canvas.graphics.* 
 import com.github.mnemotechnician.lettui.element.*
 import com.github.mnemotechnician.lettui.util.*
 
@@ -58,7 +59,9 @@ open class Label(
 					y++
 				}
 				
-				if (x < baseX + width && y < baseY + height && (it != ' ' || x != baseX)) canvas.render(it, x++, y)
+				if (x < baseX + width && y < baseY + height && (it != ' ' || x != baseX)) {
+					canvas.render(char = it, x = x++, y = y, foreground = color, background = background)
+				}
 			}
 		}
 	}

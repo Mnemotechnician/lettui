@@ -12,7 +12,7 @@ import com.github.mnemotechnician.lettui.element.border.*
 
 /** The entry point of this library. Acts as a core of the TUI. */
 open class Lettui(
-	val canvas: TextCanvas = TextCanvas(50, 20),
+	val canvas: TextCanvas = RootCanvas(50, 20),
 	var sizeProvider: SizeProvider = FixedSizeProvider(50, 20),
 	val root: Group = LinearLayout(true, true).also { it.border = Border.Rounded },
 	val targetFps: Int = 60

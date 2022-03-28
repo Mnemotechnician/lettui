@@ -3,6 +3,7 @@ package com.github.mnemotechnician.lettui.element.border
 import com.github.mnemotechnician.lettui.canvas.*
 
 /** Represents a set of border drawing characters and allows elements to draw the said border */
+@Suppress("NOTHING_TO_INLINE")
 open class Border(
 	val topLeft: Char = EMPTY_CHAR,
 	val top: Char = EMPTY_CHAR,
