@@ -89,10 +89,6 @@ open class Border(
 		drawer(x, y, w, h)
 	}
 
-	inline fun Boolean.toInt() = if (this) 1 else 0
-	
-	inline operator fun Boolean.plus(other: Boolean) = toInt() + other.toInt()
-
 	companion object {
 		fun withSet(set: BoxDrawing): Border = Border(
 			topLeft = set.cornerRightBotton,
@@ -117,3 +113,6 @@ open class Border(
 	}
 }
 
+private inline fun Boolean.toInt() = if (this) 1 else 0
+	
+private inline operator fun Boolean.plus(other: Boolean) = toInt() + other.toInt()

@@ -52,14 +52,16 @@ abstract class Element {
 	var border by listened(Border.None) { invalidate() }
 
 	/** The foreground color of the element. Some elements may not account for it. */
-	val color = Color.WHITE
+	var color = ImmutableColor.WHITE.copy()
+		set(other: Color) { field.set(other) }
 	/** The background color of the element. Some elements may not account for it. */
-	val background = Color.BLACK
+	var background = ImmutableColor.EMPTY.copy()
+		set(other: Color) { field.set(other) }
 	/** Element's transparency. Delegates to it's fore- and background colors. */
 	var alpha: Float
 		get() = max(color.alpha, background.alpha) / 255f
 		set(value: Float) { 
-			val alpha = (value * 255).toInt().coerceIn(Color.colorRange)
+			val alpha = (value * 255).toInt().coerceIn(ImmutableColor.colorRange)
 			color.alpha = alpha
 			background.alpha = alpha
 		}

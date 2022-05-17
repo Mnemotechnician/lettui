@@ -12,5 +12,5 @@ sealed class CharColor(val init: Int) {
 
 	object Foreground : CharColor(38)
 
-	object Background : CharColor(42)
+	object Background : CharColor(48)
 }

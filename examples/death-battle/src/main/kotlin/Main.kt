@@ -23,7 +23,7 @@ val participants = arrayOf(
 	"flare", "horizon", "zenith", "antumbra", "eclipse",
 	"dagger", "mace", "fortress", "scepter", "reign",
 	"nova", "pulsar", "quasar", "vela", "corvus",
-	"crawled", "spiroct", "atrax", "arkyd", "toxopid"
+	"crawler", "spiroct", "atrax", "arkyd", "toxopid"
 )
 
 val aliveUnits = ArrayList<Participant>()
@@ -37,13 +37,15 @@ fun main() {
 	val ui = Lettui(targetFps = 10, sizeProvider = FixedSizeProvider(150, 35))
 
 	ui.root.apply {
-		background.set(Color.GREEN)
+		background = Color.of("001311")
 
 		+ Label("The Epic Death Battle").apply {
 			border = Border.Rounded
 		}
-		+ LinearLayout(false, true).apply {	
+		+ LinearLayout(false, true).apply {
 			+ LinearLayout(true, true).apply {
+				background = Color.of("031")
+
 				+ Label("").apply {
 					onUpdate { text = "fighters (${aliveUnits.size})" }
 				}
@@ -55,6 +57,8 @@ fun main() {
 				}
 			}
 			+ LinearLayout(true, true).apply {
+				background = Color.of("301")
+
 				+ Label("").apply {
 					onUpdate { text = "dead (${deadUnits.size})" }
 				}

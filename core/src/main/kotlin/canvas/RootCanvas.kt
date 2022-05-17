@@ -1,7 +1,8 @@
 package com.github.mnemotechnician.lettui.canvas
 
 import kotlin.math.*
-import com.github.mnemotechnician.lettui.canvas.chars.* 
+import com.github.mnemotechnician.lettui.canvas.chars.*
+import com.github.mnemotechnician.lettui.canvas.chars.CharAttribute.*
 import com.github.mnemotechnician.lettui.canvas.graphics.*
 
 val CSI = "\u001b["
@@ -36,14 +37,14 @@ open class RootCanvas(initialWidth: Int, initialHeight: Int) : TextCanvas() {
 				append("\u001b[2K") //clear this line
 				it.forEach {
 					//only new attributes are appended, attributes that are already present are ignored
-					if (it.underline != lastChar?.underline) append(CharAttribute.UNDERLINE.ansi(it.underline))
-					if (it.strikethrough != lastChar?.strikethrough) append(CharAttribute.STRIKE.ansi(it.strikethrough))
+					if (it.underline != lastChar?.underline) append(UNDERLINE.ansi(it.underline))
+					if (it.strikethrough != lastChar?.strikethrough) append(STRIKE.ansi(it.strikethrough))
 					if (it.background != lastChar?.background) append(it.background.toBackgroundAnsi())
 
 					//the following attributes have no effect on empty chars
 					if (it.char != EMPTY_CHAR) {
-						if (it.bold != lastChar?.bold) append(CharAttribute.BOLD.ansi(it.bold))
-						if (it.italic != lastChar?.italic) append(CharAttribute.ITALIC.ansi(it.italic))
+						if (it.bold != lastChar?.bold) append(BOLD.ansi(it.bold))
+						if (it.italic != lastChar?.italic) append(ITALIC.ansi(it.italic))
 
 						if (it.foreground != lastChar?.foreground) append(it.foreground.toForegroundAnsi())
 					}
@@ -51,12 +52,20 @@ open class RootCanvas(initialWidth: Int, initialHeight: Int) : TextCanvas() {
 					append(it.char)
 					lastChar = it
 				}
+
+				// reset attributes — there can be trailing char positions
+				append(UNDERLINE.ansi(false))
+				append(STRIKE.ansi(false))
+				append(CharColor.Background.of(0))
+				lastChar = null
+
 				append("\u001b[1E") //move cursor to the beginning of the next line
 			}
 
 			append("\u001b[$cy;${cx}H") //put the cursor at the current cursor position
 		}
-		System.out.writeBytes(string.toByteArray()) //write manually to avoid buffering
+		//System.out.writeBytes(string.toByteArray()) //write manually to avoid buffering
+		System.out.print(string)
 		setCursor(width - 5, height)
 		
 		//resst every char
@@ -73,7 +82,7 @@ open class RootCanvas(initialWidth: Int, initialHeight: Int) : TextCanvas() {
 	override open fun render(
 		char: Char, x: Int, y: Int,
 		bold: Boolean, italic: Boolean, underline: Boolean, strikethrough: Boolean,
-		foreground: Color, background: Color
+		foreground: ImmutableColor, background: ImmutableColor
 	) {
 		get(x, y)?.let {
 			it.bold = bold
@@ -127,15 +136,19 @@ class CharPosition {
 	var underline = false
 	var strikethrough = false
 
-	val foreground: Color = Color.WHITE
-	val background: Color = Color.BLACK
+	val foreground: Color = ImmutableColor.WHITE.copy()
+	val background: Color = ImmutableColor.BLACK.copy()
 
 	fun resetAttributes() {
 		bold = false
 		italic = false
 		underline = false
 		strikethrough = false
-		foreground.set(Color.WHITE)
-		background.set(Color.BLACK)
+		foreground.set(ImmutableColor.WHITE)
+		background.set(ImmutableColor.BLACK)
+	}
+
+	companion object {
+		val EMPTY = CharPosition()
 	}
 }

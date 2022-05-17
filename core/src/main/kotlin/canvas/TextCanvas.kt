@@ -10,7 +10,8 @@ abstract class TextCanvas {
 	abstract fun render(
 		char: Char, x: Int, y: Int,
 		bold: Boolean = false, italic: Boolean = false, underline: Boolean = false, strikethrough: Boolean = false,
-		foreground: Color = Color.WHITE, background: Color = Color.BLACK
+		foreground: ImmutableColor = ImmutableColor.WHITE,
+		background: ImmutableColor = ImmutableColor.BLACK
 	)
 
 	/** Renders a char at the specified position with the default attributes */
@@ -23,7 +24,8 @@ abstract class TextCanvas {
 	open fun render(
 		string: String, x: Int, y: Int,
 		bold: Boolean = false, italic: Boolean = false, underline: Boolean = false, strikethrough: Boolean = false,
-		foreground: Color = Color.WHITE, background: Color = Color.BLACK
+		foreground: ImmutableColor = ImmutableColor.WHITE,
+		background: ImmutableColor = ImmutableColor.BLACK
 	) {
 		string.forEachIndexed { index, char ->
 			render(char, x + index, y, bold, italic, underline, strikethrough, foreground, background)
@@ -34,7 +36,8 @@ abstract class TextCanvas {
 	open fun render(
 		char: Char, x1: Int, y1: Int, x2: Int, y2: Int,
 		bold: Boolean = true, italic: Boolean = false, underline: Boolean = false, strikethrough: Boolean = false,
-		foreground: Color = Color.WHITE, background: Color = Color.BLACK
+		foreground: ImmutableColor = ImmutableColor.WHITE,
+		background: ImmutableColor = ImmutableColor.BLACK
 	) {
 		for (x in x1..x2) {
 			for (y in y1..y2) {
